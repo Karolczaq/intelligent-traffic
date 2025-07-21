@@ -29,6 +29,14 @@ type Road = Vehicle[];
 
 type Simulation = Record<keyof Directions, Road>;
 
+type StepStatus = {
+  leftVehicles: string[];
+};
+
+type SimulationResult = {
+  stepStatuses: StepStatus[];
+};
+
 const simulation: Simulation = {
   north: [],
   west: [],
