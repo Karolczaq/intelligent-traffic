@@ -1,0 +1,24 @@
+{
+  "name": "intelligent-traffic",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karolczaq/intelligent-traffic.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Karolczaq/intelligent-traffic/issues"
+  },
+  "homepage": "https://github.com/Karolczaq/intelligent-traffic#readme",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "typescript": "^5.8.3"
+  }
+}
