@@ -10,17 +10,21 @@ This simulation follows the Polish traffic light sequence:
 
 Unlike many other countries, Poland uses a **Red+Yellow** phase to prepare drivers for the upcoming green light, giving them time to prepare.
 
-## 📋 Table of Contents
+This simulation also assumes that during the yellow light phase, one last vehicle can still cross the intersection before the light turns red.
+
+**🚨 Simulation Completion Notice -  VERY IMPORTANT**
+
+ Due to the gradual nature of the traffic light system, some scenarios may require additional simulation steps beyond the initial command sequence to allow all vehicles to completely clear the intersection.
+
+## Table of Contents
 
 - [Traffic Logic](#traffic-logic)
 - [1: Single Lane Intersections](#1-single-lane-intersections)
-- [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Input Format](#input-format)
-- [Output Format](#output-format)
 
-## 🧮 Traffic Logic
+## Traffic Logic
 
 ### Priority Calculation
 
@@ -34,14 +38,14 @@ This prevents situations where a single vehicle from a side road gets stuck wait
 
 ## 1: Single Lane Intersections
 
-### 🛣️ Conflict Intersections (Skrzyżowania Kolizyjne)
+### Conflict Intersections (Skrzyżowania Kolizyjne)
 
 This simulation models **conflict intersections** where vehicle paths cross each other. The most common scenario is when:
 
 - 🚗 **Vehicle A** drives straight through the intersection
 - 🚙 **Vehicle B** from the opposite direction turns left, crossing Vehicle A's path
 
-### 👥 Gentleman's Agreement Protocol on Single Lane Intersections
+### Gentleman's Agreement Protocol on Single Lane Intersections
 
 In driving culture, drivers follow an unwritten **gentleman's agreement** at conflict intersections:
 
@@ -87,7 +91,7 @@ East-West Value = Σ(waitingTime²) for all vehicles on east road +
 
 The system compares these two values and activates the direction with the **higher priority score**.
 
-## 🚀 Installation
+## Installation
 
 ```bash
 # Clone the repository
@@ -101,7 +105,7 @@ npm install
 npm install -g typescript ts-node
 ```
 
-## 💻 Usage
+## Usage
 
 ### Basic Simulation
 
@@ -119,7 +123,7 @@ ts-node src/main.ts input.json results.json
 ts-node src/main.ts my-scenario.json my-results.json
 ```
 
-## 📝 Input Format
+## Input Format
 
 ```json
 {
@@ -146,35 +150,3 @@ ts-node src/main.ts my-scenario.json my-results.json
   - `endRoad`: Destination road (can be any direction)
 
 - **`step`**: Advances the simulation by one time step
-
-## 📊 Output Format
-
-```json
-{
-  "stepStatuses": [
-    {
-      "leftVehicles": ["vehicle1", "vehicle2"]
-    },
-    {
-      "leftVehicles": []
-    }
-  ]
-}
-```
-
-Each step records which vehicles successfully passed through the intersection.
-
-## 🧮 Traffic Logic
-
-### Priority Calculation
-
-The system evaluates directions using:
-
-```
-Direction Value = Σ(waitingTime²) for all vehicles in direction
-```
-
-### Light Cycle Management
-
-- **Default cycle**: 5 vehicles per direction
-- **Extension logic**: +5 vehicles if same direction remains optimal
