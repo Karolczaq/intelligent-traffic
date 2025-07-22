@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { parseInput } from "./parser";
+import { parseInput, saveStepStatuses } from "./parser";
 import runSimulation from "./simulation";
 
 function main() {
@@ -18,7 +18,8 @@ function main() {
 
   try {
     const parsedInput = parseInput(fs.readFileSync(inputPath, "utf-8"));
-    runSimulation(parsedInput.commands);
+    const simulationResult = runSimulation(parsedInput.commands);
+    saveStepStatuses(simulationResult.stepStatuses, outputPath);
   } catch (error) {
     console.error("Error during simulation", error);
     process.exit(1);

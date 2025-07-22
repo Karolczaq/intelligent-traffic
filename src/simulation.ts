@@ -1,4 +1,5 @@
-type Directions = {
+import { step } from "./singleLaneLogic";
+export type Directions = {
   north: 1;
   east: 2;
   south: 3;
@@ -25,11 +26,14 @@ type Vehicle = {
   waitingFor: number;
 };
 
-type Road = Vehicle[];
+interface Road {
+  vehicles: Vehicle[];
+  light: "green" | "yellow" | "red" | "redyellow";
+}
 
-type Simulation = Record<keyof Directions, Road>;
+export type Simulation = Record<keyof Directions, Road>;
 
-type StepStatus = {
+export type StepStatus = {
   leftVehicles: string[];
 };
 
@@ -38,11 +42,12 @@ type SimulationResult = {
 };
 
 const simulation: Simulation = {
-  north: [],
-  west: [],
-  east: [],
-  south: [],
+  north: { vehicles: [], light: "red" },
+  west: { vehicles: [], light: "red" },
+  east: { vehicles: [], light: "red" },
+  south: { vehicles: [], light: "red" },
 };
+
 function addVehicle(
   simulation: Simulation,
   vehicleId: string,
@@ -51,10 +56,11 @@ function addVehicle(
 ): void {
   console.log(`Adding vehicle ${vehicleId} from ${startRoad} to ${endRoad}`);
   const vehicle: Vehicle = { vehicleId, startRoad, endRoad, waitingFor: 0 };
-  simulation[startRoad].push(vehicle);
+  simulation[startRoad].vehicles.push(vehicle);
 }
 
 export default function runSimulation(commands: Command[]) {
+  const stepStatuses: StepStatus[] = [];
   commands.forEach((command) => {
     switch (command.type) {
       case "addVehicle":
@@ -67,9 +73,10 @@ export default function runSimulation(commands: Command[]) {
 
         break;
       case "step":
+        stepStatuses.push(step(simulation));
         break;
     }
   });
   console.log("Simulation state:", simulation);
-  return simulation;
+  return { stepStatuses };
 }
