@@ -100,27 +100,15 @@ cd intelligent-traffic
 
 # Install dependencies
 npm install
-
-# Install TypeScript globally (if not already installed)
-npm install -g typescript ts-node
 ```
 
 ## 💻 Usage
 
-### Basic Simulation
+### Running Simulation
 
 ```bash
-ts-node src/main.ts input.json output.json
-```
-
-### Example Commands
-
-```bash
-# Run the provided test scenario
-ts-node src/main.ts input.json results.json
-
-# Run with custom input
-ts-node src/main.ts my-scenario.json my-results.json
+npm run simulation input.json output.json
+npm run simulation <input.json> <output.json> <mode> <-optional
 ```
 
 ## 📝 Input Format

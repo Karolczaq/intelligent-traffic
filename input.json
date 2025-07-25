@@ -2,68 +2,56 @@
   "commands": [
     {
       "type": "addVehicle",
-      "vehicleId": "north1",
-      "startRoad": "north",
-      "endRoad": "south"
+
+      "vehicleId": "vehicle1",
+
+      "startRoad": "south",
+
+      "endRoad": "north"
     },
+
     {
       "type": "addVehicle",
-      "vehicleId": "north1",
+
+      "vehicleId": "vehicle2",
+
       "startRoad": "north",
+
       "endRoad": "south"
     },
+
     {
-      "type": "addVehicle",
-      "vehicleId": "north1",
-      "startRoad": "north",
-      "endRoad": "south"
+      "type": "step"
     },
+
     {
-      "type": "addVehicle",
-      "vehicleId": "north1",
-      "startRoad": "north",
-      "endRoad": "south"
+      "type": "step"
     },
+
     {
       "type": "addVehicle",
-      "vehicleId": "north1",
-      "startRoad": "north",
-      "endRoad": "south"
-    },
-    {
-      "type": "addVehicle",
-      "vehicleId": "north1",
-      "startRoad": "north",
-      "endRoad": "south"
-    },
-    {
-      "type": "addVehicle",
-      "vehicleId": "north1",
-      "startRoad": "north",
+
+      "vehicleId": "vehicle3",
+
+      "startRoad": "west",
+
       "endRoad": "south"
     },
 
     {
       "type": "addVehicle",
-      "vehicleId": "north2",
-      "startRoad": "north",
-      "endRoad": "east"
+
+      "vehicleId": "vehicle4",
+
+      "startRoad": "west",
+
+      "endRoad": "south"
     },
-    {
-      "type": "addVehicle",
-      "vehicleId": "north3",
-      "startRoad": "north",
-      "endRoad": "east"
-    },
+
     {
       "type": "step"
     },
-    {
-      "type": "step"
-    },
-    {
-      "type": "step"
-    },
+
     {
       "type": "step"
     },
