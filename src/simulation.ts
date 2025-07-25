@@ -1,10 +1,19 @@
-import { step } from "./singleLaneLogic";
-export type Directions = {
-  north: 1;
-  east: 2;
-  south: 3;
-  west: 4;
-};
+import {
+  step as singleLaneStep,
+  addVehicle as addVehicleSingleLane,
+} from "./singleLaneLogic";
+import {
+  addVehicle as addVehicleDualLane,
+  step as dualLaneStep,
+} from "./dualLaneLogic";
+
+export const directions = {
+  north: 0,
+  east: 1,
+  south: 2,
+  west: 3,
+} as const;
+export type Directions = typeof directions;
 
 export type AddVehicleCommand = {
   type: "addVehicle";
@@ -19,16 +28,21 @@ export type StepCommand = {
 
 export type Command = AddVehicleCommand | StepCommand;
 
-type Vehicle = {
+export type Vehicle = {
   vehicleId: string;
   startRoad: keyof Directions;
   endRoad: keyof Directions;
   waitingFor: number;
+  turnValue?: number;
 };
 
 interface Road {
-  vehicles: Vehicle[];
-  light: "green" | "yellow" | "red" | "redyellow";
+  vehicles: Vehicle[]; // For single lane mode
+  leftLane: Vehicle[]; // For left turns
+  rightLane: Vehicle[]; // For straight and right turns
+  mainLight: "green" | "yellow" | "red" | "redyellow";
+  leftTurnLight?: "green" | "yellow" | "red" | "redyellow"; // For dual lane left turns
+  rightArrow?: boolean;
 }
 
 export type Simulation = Record<keyof Directions, Road>;
@@ -37,29 +51,31 @@ export type StepStatus = {
   leftVehicles: string[];
 };
 
-type SimulationResult = {
-  stepStatuses: StepStatus[];
-};
-
 const simulation: Simulation = {
-  north: { vehicles: [], light: "red" },
-  west: { vehicles: [], light: "red" },
-  east: { vehicles: [], light: "red" },
-  south: { vehicles: [], light: "red" },
+  north: { vehicles: [], leftLane: [], rightLane: [], mainLight: "red" },
+  west: { vehicles: [], leftLane: [], rightLane: [], mainLight: "red" },
+  east: { vehicles: [], leftLane: [], rightLane: [], mainLight: "red" },
+  south: { vehicles: [], leftLane: [], rightLane: [], mainLight: "red" },
 };
 
 function addVehicle(
   simulation: Simulation,
   vehicleId: string,
   startRoad: keyof Directions,
-  endRoad: keyof Directions
+  endRoad: keyof Directions,
+  mode: "singleLane" | "dualLane" = "singleLane"
 ): void {
-  console.log(`Adding vehicle ${vehicleId} from ${startRoad} to ${endRoad}`);
-  const vehicle: Vehicle = { vehicleId, startRoad, endRoad, waitingFor: 0 };
-  simulation[startRoad].vehicles.push(vehicle);
+  if (mode === "dualLane") {
+    addVehicleDualLane(simulation, vehicleId, startRoad, endRoad);
+  } else {
+    addVehicleSingleLane(simulation, vehicleId, startRoad, endRoad);
+  }
 }
 
-export default function runSimulation(commands: Command[]) {
+export default function runSimulation(
+  commands: Command[],
+  mode: "singleLane" | "dualLane" = "singleLane"
+) {
   const stepStatuses: StepStatus[] = [];
   commands.forEach((command) => {
     switch (command.type) {
@@ -68,15 +84,18 @@ export default function runSimulation(commands: Command[]) {
           simulation,
           command.vehicleId,
           command.startRoad,
-          command.endRoad
+          command.endRoad,
+          mode
         );
-
         break;
       case "step":
-        stepStatuses.push(step(simulation));
+        if (mode === "dualLane") {
+          stepStatuses.push(dualLaneStep(simulation));
+        } else {
+          stepStatuses.push(singleLaneStep(simulation));
+        }
         break;
     }
   });
-  console.log("Simulation state:", simulation);
   return { stepStatuses };
 }

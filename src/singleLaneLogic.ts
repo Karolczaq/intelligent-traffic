@@ -1,4 +1,4 @@
-import type { Simulation, StepStatus, Directions } from "./simulation";
+import type { Simulation, StepStatus, Directions, Vehicle } from "./simulation";
 
 // Traffic light state management
 let currentGreenDirection: "northSouth" | "eastWest" | null = null;
@@ -28,14 +28,14 @@ export function step(simulation: Simulation): StepStatus {
     console.log(`Initial green light: ${currentGreenDirection}`);
   }
 
-  //Move vehicles based on current light state (green or yellow can pass)
+  //Move vehicles based on current mainLight state (green or yellow can pass)
   Object.entries(simulation).forEach(([roadName, road]) => {
     console.log(
-      `Road ${roadName}: light=${road.light}, vehicles=${road.vehicles.length}`
+      `Road ${roadName}: mainLight=${road.mainLight}, vehicles=${road.vehicles.length}`
     );
 
     if (
-      (road.light === "green" || road.light === "yellow") &&
+      (road.mainLight === "green" || road.mainLight === "yellow") &&
       road.vehicles.length > 0
     ) {
       const vehicle = road.vehicles.shift();
@@ -56,14 +56,14 @@ export function step(simulation: Simulation): StepStatus {
     );
   }
 
-  //Check for light transitions
+  //Check for mainLight transitions
   const hasYellowLights = Object.values(simulation).some(
-    (road) => road.light === "yellow"
+    (road) => road.mainLight === "yellow"
   );
 
   if (hasYellowLights) {
     // Complete transition: yellow -> red, redyellow -> green
-    console.log("🚦 Completing light transition...");
+    console.log("🚦 Completing mainLight transition...");
     const newDirection =
       currentGreenDirection === "northSouth" ? "eastWest" : "northSouth"; //direction swap
 
@@ -72,7 +72,7 @@ export function step(simulation: Simulation): StepStatus {
     currentGreenDirection = newDirection;
     durationOfCurrentCycle = 0;
 
-    console.log(`✅ Light changed to: ${currentGreenDirection}`);
+    console.log(`MainLight changed to: ${currentGreenDirection}`);
   } else {
     //Evaluate if we need to change lights
     const shouldEvaluate =
@@ -80,7 +80,7 @@ export function step(simulation: Simulation): StepStatus {
       turnsLeftToEmptyDirection(simulation, currentGreenDirection) <= 1; // Current direction almost empty
 
     if (shouldEvaluate && !hasYellowLights) {
-      console.log("🚦 Evaluating for potential light change...");
+      console.log("🚦 Evaluating for potential mainLight change...");
       const bestDirection = evaluateBestDirection(simulation);
       const oppositeDirection =
         currentGreenDirection === "northSouth" ? "eastWest" : "northSouth";
@@ -103,7 +103,7 @@ export function step(simulation: Simulation): StepStatus {
             `Preparing to change from ${currentGreenDirection} to ${oppositeDirection}`
           );
 
-          // Start light transition
+          // Start mainLight transition
           setTrafficLights(simulation, currentGreenDirection, "yellow");
           setTrafficLights(simulation, oppositeDirection, "redyellow");
         }
@@ -124,31 +124,31 @@ function setTrafficLights(
 ): void {
   // Check if we're beginning the simulation
   const allLightsNull = Object.values(simulation).every(
-    (road) => road.light === null || road.light === undefined
+    (road) => road.mainLight === null || road.mainLight === undefined
   );
 
   if (allLightsNull) {
     if (direction === "northSouth") {
-      simulation.north.light = state;
-      simulation.south.light = state;
-      simulation.east.light = "red";
-      simulation.west.light = "red";
+      simulation.north.mainLight = state;
+      simulation.south.mainLight = state;
+      simulation.east.mainLight = "red";
+      simulation.west.mainLight = "red";
     } else {
-      simulation.north.light = "red";
-      simulation.south.light = "red";
-      simulation.east.light = state;
-      simulation.west.light = state;
+      simulation.north.mainLight = "red";
+      simulation.south.mainLight = "red";
+      simulation.east.mainLight = state;
+      simulation.west.mainLight = state;
     }
   } else {
     switch (direction) {
       case "northSouth":
-        simulation.north.light = state;
-        simulation.south.light = state;
+        simulation.north.mainLight = state;
+        simulation.south.mainLight = state;
         break;
 
       case "eastWest":
-        simulation.east.light = state;
-        simulation.west.light = state;
+        simulation.east.mainLight = state;
+        simulation.west.mainLight = state;
         break;
     }
   }
@@ -195,4 +195,15 @@ export function evaluateBestDirection(
     );
 
   return northSouthValue >= eastWestValue ? "northSouth" : "eastWest";
+}
+
+export function addVehicle(
+  simulation: Simulation,
+  vehicleId: string,
+  startRoad: keyof Directions,
+  endRoad: keyof Directions
+) {
+  console.log(`Adding vehicle ${vehicleId} from ${startRoad} to ${endRoad}`);
+  const vehicle: Vehicle = { vehicleId, startRoad, endRoad, waitingFor: 0 };
+  simulation[startRoad].vehicles.push(vehicle);
 }
